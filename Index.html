@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>🐾 내 짝꿍이 댕냥이였다면? - 친구 관상 매칭기</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- html2canvas (결과 카드 이미지 저장용) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <!-- Google Fonts & Pretendard (깔끔하고 정돈된 고딕 타이포그래피 통일) -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            jua: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          },
+          boxShadow: {
+            'neo': '3px 3px 0px 0px #18181b',
+            'neo-sm': '2px 2px 0px 0px #18181b',
+            'neo-lg': '5px 5px 0px 0px #18181b',
+          },
+          colors: {
+            'pop-yellow': '#FDE047',
+            'pop-mint': '#FEF08A',
+            'pop-pink': '#FDE047',
+            'pop-purple': '#FACC15',
+            'pop-blue': '#FFFFFF',
+            'pop-bg': '#FAF9F5',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #F4F3EE;
+      background-image: radial-gradient(#d4d4d8 1px, transparent 1px);
+      background-size: 20px 20px;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+      letter-spacing: -0.02em;
+      color: #18181b;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .neo-btn {
+      transition: all 0.1s ease-in-out;
+    }
+    .neo-btn:active {
+      transform: translate(3px, 3px);
+      box-shadow: 1px 1px 0px 0px #18181b;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(3deg); }
+    }
+    .animate-float {
+      animation: float 2.5s ease-in-out infinite;
+    }
+
+    @keyframes scanline {
+      0% { top: 0%; }
+      50% { top: 95%; }
+      100% { top: 0%; }
+    }
+    .scan-bar {
+      animation: scanline 1.5s linear infinite;
+    }
+
+    /* 커스텀 스크롤바 숨김 */
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-3 sm:p-5 select-none">
+
+  <!-- 메인 앱 컨테이너 (모바일 퍼스트 최대 너비 420px) -->
+  <main class="w-full max-w-[410px] mx-auto relative">
+
+    <!-- ==================== 1. 랜딩 화면 (LANDING) ==================== -->
+    <section id="view-landing" class="bg-white border-[2.5px] border-zinc-900 rounded-3xl shadow-neo-lg p-5 flex flex-col justify-between transition-all">
+      
+      <!-- 상단 뱃지 -->
+      <div class="flex items-center justify-between mb-3">
+        <span class="bg-pop-yellow border-2 border-zinc-900 text-xs font-extrabold px-2.5 py-1 rounded-full shadow-neo-sm">
+          🔥 쉬는시간 10초 컷
+        </span>
+        <span class="bg-zinc-100 border-2 border-zinc-900 text-[11px] font-bold px-2.5 py-1 rounded-full text-zinc-700">
+          로그인 X · 무설치
+        </span>
+      </div>
+
+      <!-- 타이틀 영역 -->
+      <div class="text-center my-2">
+        <div class="inline-block bg-pop-yellow border-[2.5px] border-zinc-900 rounded-2xl px-4 py-2 shadow-neo mb-2">
+          <h1 class="font-black text-xl sm:text-2xl tracking-tight text-zinc-900">
+            🐾 내 짝꿍이 동물이었다면?
+          </h1>
+        </div>
+        <p class="text-xs sm:text-sm font-semibold text-zinc-600 mt-1">
+          친구 얼굴 찍고 닮은 동물상 & 학교생활 B급 스탯 털어보기
+        </p>
+      </div>
+
+      <!-- 중앙 비주얼 카드 -->
+      <div class="bg-pop-bg border-[2.5px] border-zinc-900 rounded-2xl p-4 my-3 text-center relative overflow-hidden">
+        <div class="flex justify-center items-center gap-2 text-3xl sm:text-4xl my-1 animate-float">
+          <span>🐶</span>
+          <span>🐱</span>
+          <span class="text-xs font-black bg-pop-yellow border-2 border-zinc-900 rounded-full px-2 py-0.5 shadow-neo-sm">VS</span>
+          <span>🐹</span>
+          <span>🦊</span>
+        </div>
+        <p class="text-[11px] font-bold text-zinc-800 mt-2 bg-white inline-block px-3 py-1 rounded-full border-2 border-zinc-900">
+          "강아지·고양이부터 햄스터·여우·곰상까지 24종 완비!"
+        </p>
+      </div>
+
+      <!-- 옵션 설정 영역 -->
+      <div class="space-y-3 my-1">
+        <!-- 모드 선택 토글 -->
+        <div>
+          <label class="block text-xs font-extrabold mb-1.5 ml-1">1. 판독 모드 선택 (총 24종 동물상)</label>
+          <div class="grid grid-cols-3 gap-1.5">
+            <button type="button" onclick="setMode('random')" id="mode-random" class="mode-btn neo-btn py-2 px-1 rounded-xl border-2 border-zinc-900 font-extrabold text-[11px] sm:text-xs bg-pop-yellow text-zinc-900 shadow-neo-sm">
+              🎲 전체랜덤
+            </button>
+            <button type="button" onclick="setMode('dog')" id="mode-dog" class="mode-btn neo-btn py-2 px-1 rounded-xl border-2 border-zinc-900 font-extrabold text-[11px] sm:text-xs bg-white text-zinc-800 shadow-neo-sm">
+              🐶 강아지상
+            </button>
+            <button type="button" onclick="setMode('cat')" id="mode-cat" class="mode-btn neo-btn py-2 px-1 rounded-xl border-2 border-zinc-900 font-extrabold text-[11px] sm:text-xs bg-white text-zinc-800 shadow-neo-sm">
+              🐱 고양이상
+            </button>
+            <button type="button" onclick="setMode('small')" id="mode-small" class="mode-btn neo-btn py-2 px-1 rounded-xl border-2 border-zinc-900 font-extrabold text-[11px] sm:text-xs bg-white text-zinc-800 shadow-neo-sm">
+              🐹 소동물상
+            </button>
+            <button type="button" onclick="setMode('wild')" id="mode-wild" class="mode-btn neo-btn py-2 px-1 rounded-xl border-2 border-zinc-900 font-extrabold text-[11px] sm:text-xs bg-white text-zinc-800 shadow-neo-sm col-span-2">
+              🦊 야생·맹수상 (여우·곰·알파카 등)
+            </button>
+          </div>
+        </div>
+
+        <!-- 친구 이름 입력 -->
+        <div>
+          <label for="friend-name" class="block text-xs font-extrabold mb-1 ml-1">2. 짝꿍 이름 (선택)</label>
+          <input type="text" id="friend-name" maxlength="10" placeholder="예: 김민수 (안 쓰면 '익명의 짝꿍')" 
+            class="w-full px-3.5 py-2.5 text-sm font-bold bg-white border-2 border-zinc-900 rounded-xl shadow-neo-sm focus:outline-none focus:bg-pop-yellow/20 placeholder:text-zinc-400" />
+        </div>
+      </div>
+
+      <!-- 사진 업로드 액션 버튼 -->
+      <div class="grid grid-cols-2 gap-2.5 mt-4">
+        <!-- 카메라 촬영 버튼 -->
+        <label class="neo-btn cursor-pointer bg-pop-yellow border-[2.5px] border-zinc-900 rounded-2xl p-3 shadow-neo flex flex-col items-center justify-center text-center">
+          <span class="text-xl mb-0.5">📸</span>
+          <span class="font-black text-sm sm:text-base text-zinc-900">카메라로 찍기</span>
+          <span class="text-[10px] font-semibold text-zinc-700">실시간 엽사 환영</span>
+          <input type="file" accept="image/*" capture="user" class="hidden" onchange="handleImageUpload(event)" />
+        </label>
+
+        <!-- 앨범 선택 버튼 -->
+        <label class="neo-btn cursor-pointer bg-white hover:bg-zinc-50 border-[2.5px] border-zinc-900 rounded-2xl p-3 shadow-neo flex flex-col items-center justify-center text-center">
+          <span class="text-xl mb-0.5">🖼️</span>
+          <span class="font-black text-sm sm:text-base text-zinc-900">앨범에서 고르기</span>
+          <span class="text-[10px] font-semibold text-zinc-600">갤러리 짤 소환</span>
+          <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(event)" />
+        </label>
+      </div>
+
+      <!-- 샘플 사진으로 바로 체험하기 (테스트용) -->
+      <button type="button" onclick="runSampleTest()" class="mt-2.5 w-full py-2 text-xs font-extrabold text-zinc-600 hover:text-zinc-900 underline decoration-2 underline-offset-2">
+        사진이 없다면? 샘플 짝꿍 얼굴로 먼저 테스트하기 👉
+      </button>
+
+      <!-- HTML 원본 파일 다운로드 버튼 -->
+      <button type="button" onclick="downloadHtmlFile()" class="neo-btn mt-2 w-full py-2 px-3 bg-zinc-100 hover:bg-zinc-200 border-2 border-zinc-900 rounded-xl shadow-neo-sm text-xs font-extrabold text-zinc-800 flex items-center justify-center gap-1.5">
+        <span>💾</span> 이 웹앱 HTML 파일로 소장하기 (.html)
+      </button>
+
+      <!-- 개인정보 안심 안내 문구 -->
+      <div class="mt-3 pt-2.5 border-t-2 border-dashed border-zinc-300 text-center">
+        <p class="text-[11px] font-semibold text-zinc-500 flex items-center justify-center gap-1">
+          <span>🔒</span> 사진은 서버에 저장되지 않고 폰 안에서만 분석됩니다.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- ==================== 2. 로딩 화면 (LOADING) ==================== -->
+    <section id="view-loading" class="hidden bg-white border-[2.5px] border-zinc-900 rounded-3xl shadow-neo-lg p-6 text-center flex-col items-center justify-center min-h-[480px]">
+      <div class="relative w-36 h-36 mx-auto mb-5 rounded-full border-[2.5px] border-zinc-900 overflow-hidden bg-pop-bg shadow-neo">
+        <img id="loading-preview" src="" alt="분석중" class="w-full h-full object-cover" />
+        <!-- 스캔 레이저 효과 -->
+        <div class="scan-bar absolute left-0 w-full h-1.5 bg-pop-yellow border-y border-zinc-900 opacity-95"></div>
+      </div>
+
+      <div class="inline-block bg-pop-yellow border-2 border-zinc-900 rounded-full px-3 py-1 text-xs font-extrabold mb-2 shadow-neo-sm">
+        AI 댕냥 관상학 스캔 중...
+      </div>
+
+      <h2 id="loading-text" class="font-black text-lg sm:text-xl text-zinc-900 min-h-[56px] flex items-center justify-center px-2">
+        눈빛에서 간식 집착도 측정 중...
+      </h2>
+
+      <!-- 프로그레스 바 -->
+      <div class="w-full bg-zinc-100 h-4 rounded-full border-2 border-zinc-900 overflow-hidden p-0.5 mt-4 shadow-neo-sm">
+        <div id="loading-bar" class="h-full bg-pop-yellow rounded-full transition-all duration-300" style="width: 10%"></div>
+      </div>
+    </section>
+
+
+    <!-- ==================== 3. 결과 화면 (RESULT) ==================== -->
+    <section id="view-result" class="hidden flex-col items-center w-full">
+      
+      <!-- [이미지 저장 타겟 영역: 인스타 스토리 9:16 감성 카드] -->
+      <div id="capture-card" class="w-full bg-white border-[2.5px] border-zinc-900 rounded-3xl shadow-neo-lg p-4 relative overflow-hidden">
+        
+        <!-- 카드 상단 헤더 -->
+        <div class="flex items-center justify-between border-b-2 border-zinc-900 pb-2 mb-3">
+          <span class="font-black text-xs bg-pop-yellow border-2 border-zinc-900 px-2.5 py-0.5 rounded-full">
+            🐾 동물 관상 성적표
+          </span>
+          <span id="res-date" class="text-[11px] font-bold text-zinc-500">
+            2026학년도 1학기
+          </span>
+        </div>
+
+        <!-- 친구 사진 VS 동물 매칭 영역 -->
+        <div class="flex items-center justify-center gap-2.5 my-2">
+          <!-- 친구 사진 -->
+          <div class="flex flex-col items-center">
+            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-[3px] border-zinc-900 overflow-hidden bg-white shadow-neo">
+              <img id="res-user-img" src="" alt="친구 사진" class="w-full h-full object-cover" />
+            </div>
+            <span id="res-friend-name" class="mt-1.5 text-xs font-extrabold bg-white border-2 border-zinc-900 px-2.5 py-0.5 rounded-full truncate max-w-[110px]">
+              익명의 짝꿍
+            </span>
+          </div>
+
+          <!-- VS 뱃지 -->
+          <div class="flex flex-col items-center justify-center -mt-4">
+            <span class="font-black text-xs bg-zinc-900 text-pop-yellow border-2 border-zinc-900 rounded-full w-8 h-8 flex items-center justify-center shadow-neo-sm">
+              VS
+            </span>
+          </div>
+
+          <!-- 매칭 동물 일러스트/이모지 -->
+          <div class="flex flex-col items-center">
+            <div id="res-pet-bg" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-[3px] border-zinc-900 bg-pop-mint flex items-center justify-center shadow-neo relative">
+              <span id="res-pet-emoji" class="text-5xl sm:text-6xl">🐶</span>
+              <span id="res-pet-tag" class="absolute -top-1 -right-1 text-[10px] font-extrabold bg-zinc-900 text-white px-2 py-0.5 rounded-full">
+                강아지상
+              </span>
+            </div>
+            <span id="res-sync-rate" class="mt-1.5 text-xs font-extrabold bg-pop-yellow border-2 border-zinc-900 px-2.5 py-0.5 rounded-full">
+              싱크로율 96.4%
+            </span>
+          </div>
+        </div>
+
+        <!-- 품종 타이틀 -->
+        <div class="text-center my-2.5 bg-pop-bg border-2 border-zinc-900 rounded-2xl py-2.5 px-3 shadow-neo-sm">
+          <p class="text-[11px] font-semibold text-zinc-500">당신의 짝꿍과 100% 일치하는 본캐는</p>
+          <h2 id="res-breed-title" class="font-black text-base sm:text-lg text-zinc-900 leading-snug mt-0.5">
+            하찮고 소중한 유리멘탈 치와와
+          </h2>
+        </div>
+
+        <!-- 고등학생 맞춤형 B급 스탯 게이지 4개 -->
+        <div class="bg-white border-2 border-zinc-900 rounded-2xl p-3 my-2.5 space-y-2 shadow-neo-sm">
+          <!-- 스탯 1 -->
+          <div>
+            <div class="flex justify-between text-[11px] font-bold mb-0.5">
+              <span>🏃 야자 째고 PC방 갈 확률</span>
+              <span id="stat-1-val" class="font-black text-zinc-900">88%</span>
+            </div>
+            <div class="w-full h-2.5 bg-zinc-100 rounded-full border border-zinc-900 overflow-hidden">
+              <div id="stat-1-bar" class="h-full bg-pop-yellow rounded-full" style="width: 88%"></div>
+            </div>
+          </div>
+
+          <!-- 스탯 2 -->
+          <div>
+            <div class="flex justify-between text-[11px] font-bold mb-0.5">
+              <span>🥐 매점 빵셔틀 당할 확률</span>
+              <span id="stat-2-val" class="font-black text-zinc-900">42%</span>
+            </div>
+            <div class="w-full h-2.5 bg-zinc-100 rounded-full border border-zinc-900 overflow-hidden">
+              <div id="stat-2-bar" class="h-full bg-zinc-800 rounded-full" style="width: 42%"></div>
+            </div>
+          </div>
+
+          <!-- 스탯 3 -->
+          <div>
+            <div class="flex justify-between text-[11px] font-bold mb-0.5">
+              <span>👀 선생님 눈 피해서 딴짓할 확률</span>
+              <span id="stat-3-val" class="font-black text-zinc-900">95%</span>
+            </div>
+            <div class="w-full h-2.5 bg-zinc-100 rounded-full border border-zinc-900 overflow-hidden">
+              <div id="stat-3-bar" class="h-full bg-pop-yellow rounded-full" style="width: 95%"></div>
+            </div>
+          </div>
+
+          <!-- 스탯 4 -->
+          <div>
+            <div class="flex justify-between text-[11px] font-bold mb-0.5">
+              <span>🍗 간식(급식) 주면 꼬리 흔들 확률</span>
+              <span id="stat-4-val" class="font-black text-zinc-900">100%</span>
+            </div>
+            <div class="w-full h-2.5 bg-zinc-100 rounded-full border border-zinc-900 overflow-hidden">
+              <div id="stat-4-bar" class="h-full bg-zinc-800 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 담임선생님 한줄 관상평 -->
+        <div class="bg-pop-yellow/40 border-2 border-zinc-900 rounded-2xl p-2.5 my-2">
+          <div class="flex items-center gap-1 text-[11px] font-extrabold text-zinc-900 mb-1">
+            <span>📝</span> <span>담임선생님 한줄 관상평</span>
+          </div>
+          <p id="res-comment" class="text-xs font-semibold text-zinc-800 leading-relaxed">
+            "평소엔 세상 순한 얼굴로 엎드려 자지만, 4교시 종 치기 3분 전부터 급식실로 튀어나갈 준비 자세를 취하는 고도의 전략가."
+          </p>
+        </div>
+
+        <!-- 환상의 짝꿍 / 환장의 짝꿍 -->
+        <div class="grid grid-cols-2 gap-2 mt-2">
+          <div class="bg-pop-yellow/60 border-2 border-zinc-900 rounded-xl p-2 text-center">
+            <span class="block text-[10px] font-bold text-zinc-700">💖 환상의 짝꿍</span>
+            <span id="res-good-match" class="block text-[11px] font-extrabold text-zinc-900 mt-0.5 truncate">
+              급식 1등 골든리트리버
+            </span>
+          </div>
+          <div class="bg-zinc-100 border-2 border-zinc-900 rounded-xl p-2 text-center">
+            <span class="block text-[10px] font-bold text-zinc-600">💣 환장의 짝꿍</span>
+            <span id="res-bad-match" class="block text-[11px] font-extrabold text-zinc-900 mt-0.5 truncate">
+              하악질하는 샴고양이
+            </span>
+          </div>
+        </div>
+
+        <!-- 워터마크 -->
+        <div class="text-center mt-2.5 pt-1.5 border-t border-zinc-200 flex justify-between items-center text-[10px] font-semibold text-zinc-400">
+          <span>내 짝꿍이 동물이었다면?</span>
+          <span>#친구관상 #동물상테스트</span>
+        </div>
+      </div>
+      <!-- [이미지 저장 타겟 영역 끝] -->
+
+
+      <!-- 하단 공유 및 재시작 버튼 영역 -->
+      <div class="w-full space-y-2 mt-3">
+        <!-- 이미지 저장 버튼 -->
+        <button type="button" onclick="saveResultImage()" class="neo-btn w-full bg-pop-yellow border-[2.5px] border-zinc-900 rounded-2xl py-3 px-4 shadow-neo flex items-center justify-center gap-2 font-black text-sm sm:text-base text-zinc-900">
+          <span>📥</span> 결과 카드 이미지 저장 (인스타 공유용)
+        </button>
+
+        <div class="grid grid-cols-2 gap-2">
+          <!-- 링크 공유 버튼 -->
+          <button type="button" onclick="copyShareLink()" class="neo-btn bg-zinc-900 text-white border-[2.5px] border-zinc-900 rounded-2xl py-2.5 px-3 shadow-neo flex items-center justify-center gap-1.5 font-extrabold text-xs sm:text-sm">
+            <span>🔗</span> 링크 복사하기
+          </button>
+
+          <!-- 다시하기 버튼 -->
+          <button type="button" onclick="resetApp()" class="neo-btn bg-white border-[2.5px] border-zinc-900 rounded-2xl py-2.5 px-3 shadow-neo flex items-center justify-center gap-1.5 font-extrabold text-xs sm:text-sm text-zinc-900">
+            <span>🔄</span> 다른 친구 보기
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- 토스트 알림창 (alert 대체용) -->
+  <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-20 opacity-0 transition-all duration-300 z-50 bg-zinc-900 text-white border-2 border-pop-yellow px-4 py-2.5 rounded-full shadow-lg text-xs sm:text-sm font-extrabold whitespace-nowrap flex items-center gap-2">
+    <span id="toast-icon">✅</span>
+    <span id="toast-msg">알림 메시지</span>
+  </div>
+
+  <!-- 숨겨진 이미지 분석용 캔버스 -->
+  <canvas id="analysis-canvas" width="64" height="64" class="hidden"></canvas>
+
+  <script>
+    // ==================== 1. 24종 동물 B급 데이터베이스 (강아지 7종 + 고양이 7종 + 소동물 5종 + 야생·맹수 5종) ====================
+    const PETS_DATABASE = [
+      // --- 강아지상 7종 ---
+      {
+        id: 'dog_1',
+        type: 'dog',
+        tag: '강아지상',
+        emoji: '🐕',
+        bgColor: '#FDE047',
+        title: '하찮고 소중한 유리멘탈 치와와',
+        comment: '눈은 항상 촉촉하게 떨리고 있지만 성질머리는 전교 1등. 건드리면 일단 짖고 보는데 막상 싸우면 1초 만에 쫄아서 도망감.',
+        goodMatch: '허허실실 골든리트리버',
+        badMatch: '하악질하는 러시안블루'
+      },
+      {
+        id: 'dog_2',
+        type: 'dog',
+        tag: '강아지상',
+        emoji: '🦮',
+        bgColor: '#FEF9C3',
+        title: '급식실 1등으로 뛰어가는 골든리트리버',
+        comment: '세상 걱정 1도 없는 해맑은 인싸. 점심시간 종 치자마자 빛의 속도로 뛰어가 급식실 문 여는 주방 이모님과 하이파이브함.',
+        goodMatch: '유리멘탈 치와와',
+        badMatch: '귀차니즘 먼치킨 고양이'
+      },
+      {
+        id: 'dog_3',
+        type: 'dog',
+        tag: '강아지상',
+        emoji: '🐕‍🦺',
+        bgColor: '#F4F4F5',
+        title: '선생님 말씀 1도 안 듣는 시베리안 허스키',
+        comment: '겉모습은 냉미남·냉미녀 카리스마 뿜뿜인데 입만 열면 허당미 폭발. 야자 감독 선생님 몰래 엉뚱한 딴짓하다 제일 먼저 걸림.',
+        goodMatch: '수다쟁이 푸들',
+        badMatch: '눈치 백단 코리안숏헤어'
+      },
+      {
+        id: 'dog_4',
+        type: 'dog',
+        tag: '강아지상',
+        emoji: '🐩',
+        bgColor: '#FDE047',
+        title: '쉬는시간 10분 내내 떠드는 토이푸들',
+        comment: '우리 반 모든 소식통의 중심. 수업 시간에도 옆자리 짝꿍한테 쪽지 돌리고 눈빛으로 대화하느라 1교시부터 7교시까지 바쁨.',
+        goodMatch: '허당 시베리안 허스키',
+        badMatch: '혼자 있고 싶은 페르시안'
+      },
+      {
+        id: 'dog_5',
+        type: 'dog',
+        tag: '강아지상',
+        emoji: '🐶',
+        bgColor: '#FEF9C3',
+        title: '체육시간에만 눈 돌아가는 웰시코기',
+        comment: '평소 교실에선 얌전한 척 엎드려 자다가 피구나 축구만 시작하면 승부욕에 눈이 뒤집혀 프로 선수 빙의하는 반전 매력 소유자.',
+        goodMatch: '먹보 비글',
+        badMatch: '잠만 자는 스코티시폴드'
+      },
+      {
+        id: 'dog_6',
+        type: 'dog',
+        tag: '강아지상',
+        emoji: '🐾',
+        bgColor: '#FDE047',
+        title: '매점 신상 과자 다 털어가는 비글',
+        comment: '가방에 교과서는 없어도 간식은 3일 치가 들어있음. 쉬는 시간마다 매점으로 출근 도장 찍으며 친구들 과자 한 입씩 다 뺏어 먹음.',
+        goodMatch: '승부욕 웰시코기',
+        badMatch: '까칠한 샴고양이'
+      },
+      {
+        id: 'dog_7',
+        type: 'dog',
+        tag: '강아지상',
+        emoji: '🦊',
+        bgColor: '#F4F4F5',
+        title: '억울한 표정 장인 시바견',
+        comment: '분명 본인이 잘못해놓고 세상 억울한 표정으로 선생님 쳐다봐서 혼내려던 선생님도 웃음 터지게 만드는 천부적 연기파.',
+        goodMatch: '해맑은 골든리트리버',
+        badMatch: '도도한 노르웨이숲'
+      },
+
+      // --- 고양이상 7종 ---
+      {
+        id: 'cat_1',
+        type: 'cat',
+        tag: '고양이상',
+        emoji: '🐈‍⬛',
+        bgColor: '#F4F4F5',
+        title: '지각해도 당당한 턱시도 고양이',
+        comment: '교문 닫히기 1초 전에 유유히 걸어 들어오면서도 전혀 당황하지 않는 강심장. 선생님 잔소리도 한 귀로 듣고 한 귀로 흘리는 마법사.',
+        goodMatch: '수다쟁이 토이푸들',
+        badMatch: '유리멘탈 치와와'
+      },
+      {
+        id: 'cat_2',
+        type: 'cat',
+        tag: '고양이상',
+        emoji: '🐈',
+        bgColor: '#FDE047',
+        title: '생존 본능 만렙 길거리 코리안숏헤어',
+        comment: '선생님 발소리만 듣고도 0.5초 만에 스마트폰 숨기고 공부하는 척 자세 잡는 생존 스페셜리스트. 학교생활 적응력 전교 1위.',
+        goodMatch: '급식 1등 골든리트리버',
+        badMatch: '허당 시베리안 허스키'
+      },
+      {
+        id: 'cat_3',
+        type: 'cat',
+        tag: '고양이상',
+        emoji: '😼',
+        bgColor: '#FEF9C3',
+        title: '단톡방 읽씹 장인 러시안블루',
+        comment: '겉으론 차갑고 도도해 보이지만 친한 친구들 앞에선 엽사도 서슴없이 찍는 츤데레. 귀찮은 일은 절대 안 하지만 의리는 넘침.',
+        goodMatch: '억울한 시바견',
+        badMatch: '먹보 비글'
+      },
+      {
+        id: 'cat_4',
+        type: 'cat',
+        tag: '고양이상',
+        emoji: '😺',
+        bgColor: '#F4F4F5',
+        title: '1교시부터 7교시까지 숙면하는 스코티시폴드',
+        comment: '책상에 머리만 대면 3초 만에 기절하는 수면의 달인. 자다가도 급식 메뉴 얘기 나오면 귀신같이 고개 들고 눈 뜨는 신기한 능력 보유.',
+        goodMatch: '매점 털이범 비글',
+        badMatch: '승부욕 웰시코기'
+      },
+      {
+        id: 'cat_5',
+        type: 'cat',
+        tag: '고양이상',
+        emoji: '🐱',
+        bgColor: '#FEF9C3',
+        title: '거울 공주병 말기 페르시안 고양이',
+        comment: '쉬는 시간마다 앞머리 빗질과 거울 체크가 필수인 비주얼 담당. 체육대회 날에도 땀 흘리는 것보다 사진 잘 나오는 각도가 더 중요함.',
+        goodMatch: '당당한 턱시도 고양이',
+        badMatch: '급식 1등 골든리트리버'
+      },
+      {
+        id: 'cat_6',
+        type: 'cat',
+        tag: '고양이상',
+        emoji: '🦁',
+        bgColor: '#FDE047',
+        title: '호기심 대폭발 벵갈 고양이',
+        comment: '학교에서 벌어지는 모든 사건·사고 현장에 무조건 구경 가야 직성이 풀림. 에너지가 넘쳐서 야자 시간만 되면 몸이 근질거림.',
+        goodMatch: '허당 시베리안 허스키',
+        badMatch: '숙면 스코티시폴드'
+      },
+      {
+        id: 'cat_7',
+        type: 'cat',
+        tag: '고양이상',
+        emoji: '😾',
+        bgColor: '#F4F4F5',
+        title: '건드리면 냥냥펀치 날리는 샴고양이',
+        comment: '평소엔 조용한 모범생 포스지만 배고플 때나 잠 깨울 때 건드리면 매운맛 독설 날림. 근데 또 맛있는 거 사주면 금방 풀림.',
+        goodMatch: '해맑은 골든리트리버',
+        badMatch: '유리멘탈 치와와'
+      },
+
+      // --- 소동물상 5종 (햄스터, 토끼, 다람쥐, 수달, 쿼카) ---
+      {
+        id: 'small_1',
+        type: 'small',
+        tag: '햄스터상',
+        emoji: '🐹',
+        bgColor: '#FDE047',
+        title: '볼따구에 간식 숨겨놓고 우물거리는 햄스터',
+        comment: '수업 시간 내내 선생님 몰래 사탕이나 젤리를 입안 가득 넣고 오물거리는 얌체 먹보. 걸릴 것 같으면 세상 순진한 눈망울로 발뺌함.',
+        goodMatch: '다정한 수달상',
+        badMatch: '눈치 빠른 사막여우'
+      },
+      {
+        id: 'small_2',
+        type: 'small',
+        tag: '토끼상',
+        emoji: '🐰',
+        bgColor: '#FEF9C3',
+        title: '깜짝 놀라면 심장 멎는 소심한 아기토끼',
+        comment: '선생님이 이름만 불러도 동공 지진 일어나는 유리심장. 평소엔 얌전해 보이지만 친한 친구들끼리 모이면 텐션 폭주해서 감당 안 됨.',
+        goodMatch: '듬직한 불곰상',
+        badMatch: '야자 탈주 늑대상'
+      },
+      {
+        id: 'small_3',
+        type: 'small',
+        tag: '다람쥐상',
+        emoji: '🐿️',
+        bgColor: '#FDE047',
+        title: '필통과 파우치에 잡동사니 100개 모으는 다람쥐',
+        comment: '볼펜 색깔별로 30자루, 포스트잇, 간식까지 책상 서랍에 온갖 보물을 쟁여놓는 수집광. 부지런히 움직이는데 정작 중요한 준비물은 빼먹음.',
+        goodMatch: '해맑은 쿼카상',
+        badMatch: '귀차니즘 나무늘보'
+      },
+      {
+        id: 'small_4',
+        type: 'small',
+        tag: '수달상',
+        emoji: '🦦',
+        bgColor: '#F4F4F5',
+        title: '친한 친구 손 꼭 붙잡고 화장실 가는 수달',
+        comment: '혼자서는 매점도 못 가는 프로 껌딱지. 짝꿍과 24시간 붙어 다니며 수다 떨어야 직성이 풀리는 반의 공식 분위기 메이커.',
+        goodMatch: '볼빵빵 햄스터상',
+        badMatch: '독고다이 턱시도 고양이'
+      },
+      {
+        id: 'small_5',
+        type: 'small',
+        tag: '쿼카상',
+        emoji: '🐨',
+        bgColor: '#FEF9C3',
+        title: '혼나면서도 실실 웃고 있는 해맑은 쿼카',
+        comment: '선생님께 혼나는 중에도 입꼬리가 올라가 있어서 오해받는 억울한 스마일상. 웬만한 스트레스에는 타격 1도 없는 강철 멘탈 보유.',
+        goodMatch: '수집광 다람쥐상',
+        badMatch: '예민보스 샴고양이'
+      },
+
+      // --- 야생·맹수상 5종 (여우, 곰, 너구리, 알파카, 공룡) ---
+      {
+        id: 'wild_1',
+        type: 'wild',
+        tag: '여우상',
+        emoji: '🦊',
+        bgColor: '#FDE047',
+        title: '선생님 칭찬 싹쓸이하는 눈치 100단 사막여우',
+        comment: '선생님이 뭘 원하는지 귀신같이 파악해서 수행평가 A+ 챙겨가는 전략가. 겉으론 쿨한 척하지만 뒤에서 치밀하게 다 준비해 옴.',
+        goodMatch: '듬직한 불곰상',
+        badMatch: '허당 시베리안 허스키'
+      },
+      {
+        id: 'wild_2',
+        type: 'wild',
+        tag: '곰상',
+        emoji: '🐻',
+        bgColor: '#F4F4F5',
+        title: '매점 빵 5개 순삭하는 듬직한 불곰',
+        comment: '묵직한 존재감으로 교실 뒷자리를 지키는 대장부. 평소엔 느긋하고 순하지만 점심시간 종이 울리면 누구보다 빠르게 급식판 들고 돌진함.',
+        goodMatch: '소심한 아기토끼',
+        badMatch: '까칠한 치와와'
+      },
+      {
+        id: 'wild_3',
+        type: 'wild',
+        tag: '너구리상',
+        emoji: '🦝',
+        bgColor: '#FEF9C3',
+        title: '야자 째고 PC방 갈 궁리만 하는 장난꾸러기 너구리',
+        comment: '우리 반 모든 장난과 이벤트의 주동자. 잔머리가 비상해서 야자 감독 선생님 눈을 피해 탈출 루트를 개척하는 프로 탈주러.',
+        goodMatch: '전략가 사막여우',
+        badMatch: '모범생 골든리트리버'
+      },
+      {
+        id: 'wild_4',
+        type: 'wild',
+        tag: '알파카상',
+        emoji: '🦙',
+        bgColor: '#F4F4F5',
+        title: '멍 때리다가 질문 받으면 어버버하는 알파카',
+        comment: '수업 시간에 영혼이 안드로메다로 가출해 있다가 선생님이 갑자기 질문하면 세상 해맑게 "네?!" 되묻는 4차원 매력의 소유자.',
+        goodMatch: '해맑은 쿼카상',
+        badMatch: '잔소리꾼 토이푸들'
+      },
+      {
+        id: 'wild_5',
+        type: 'wild',
+        tag: '공룡상',
+        emoji: '🦖',
+        bgColor: '#FDE047',
+        title: '웃음소리 데시벨 전교 1등 티라노사우루스',
+        comment: '평소엔 카리스마 넘치는 냉미남·냉미녀 포스인데 한 번 웃음 터지면 옆 반까지 들리는 호탕한 웃음소리로 교실을 초토화시킴.',
+        goodMatch: '장난꾸러기 너구리',
+        badMatch: '잠만 자는 스코티시폴드'
+      }
+    ];
+
+    // 로딩 중 재미있는 멘트 리스트
+    const LOADING_MESSAGES = [
+      "눈빛에서 간식 집착도 측정 중...",
+      "야자 째고 PC방 갈 확률 계산 중...",
+      "선생님 몰래 딴짓할 각도 스캔 중...",
+      "급식실 뛰어가기 민첩성 분석 중...",
+      "전생의 댕냥이 DNA 추출 완료!"
+    ];
+
+    // 현재 선택된 판독 모드 ('dog' | 'cat' | 'random')
+    let currentMode = 'random';
+    let currentImageDataUrl = '';
+
+    // ==================== 2. UI 컨트롤 및 모드 변경 ====================
+    function setMode(mode) {
+      currentMode = mode;
+      const buttons = ['dog', 'cat', 'small', 'wild', 'random'];
+      buttons.forEach(btn => {
+        const el = document.getElementById(`mode-${btn}`);
+        if (btn === mode) {
+          el.classList.remove('bg-white', 'text-zinc-800');
+          el.classList.add('bg-pop-yellow', 'text-zinc-900');
+        } else {
+          el.classList.remove('bg-pop-yellow', 'text-zinc-900');
+          el.classList.add('bg-white', 'text-zinc-800');
+        }
+      });
+    }
+
+    function showToast(msg, icon = '✅') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      document.getElementById('toast-icon').textContent = icon;
+      
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 2600);
+    }
+
+    // ==================== 3. 이미지 업로드 및 결정론적(Deterministic) 분석 로직 ====================
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentImageDataUrl = e.target.result;
+        startAnalysisProcess(currentImageDataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // 사진 없는 사용자를 위한 샘플 테스트 이미지 생성기
+    function runSampleTest() {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = 200;
+      tempCanvas.height = 200;
+      const ctx = tempCanvas.getContext('2d');
+      
+      // 랜덤 파스텔 얼굴 캐릭터 그리기 (클릭할 때마다 다른 샘플 시드 생성)
+      const colors = ['#FFE66D', '#A8E6CF', '#FF8B94', '#85E3FF', '#D4A5FF'];
+      const bg = colors[Math.floor(Math.random() * colors.length)];
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 200, 200);
+      
+      ctx.font = '90px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const faces = ['😎', '🤪', '🤓', '🥳', '😴', '🤠'];
+      ctx.fillText(faces[Math.floor(Math.random() * faces.length)], 100, 105);
+
+      currentImageDataUrl = tempCanvas.toDataURL('image/png');
+      startAnalysisProcess(currentImageDataUrl);
+    }
+
+    /**
+     * 이미지 픽셀 색상 분포, 밝기, 비율을 분석해 일관된 해시(Seed)를 뽑아내는 함수
+     * (같은 사진을 넣으면 항상 동일한 결과가 나오고, 다른 사진이면 다채롭게 매칭됨)
+     */
+    function analyzeImagePixels(imgElement) {
+      const canvas = document.getElementById('analysis-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, 64, 64);
+      ctx.drawImage(imgElement, 0, 0, 64, 64);
+
+      const imageData = ctx.getImageData(0, 0, 64, 64).data;
+      let rSum = 0, gSum = 0, bSum = 0;
+      let hash = 5381;
+
+      for (let i = 0; i < imageData.length; i += 16) {
+        const r = imageData[i];
+        const g = imageData[i + 1];
+        const b = imageData[i + 2];
+        rSum += r;
+        gSum += g;
+        bSum += b;
+        // DJB2 변형 해시 누적
+        hash = ((hash << 5) + hash) + (r * 3 + g * 5 + b * 7);
+        hash = hash & 0x7fffffff; // 양수 유지
+      }
+
+      const aspectRatioBonus = Math.round((imgElement.naturalWidth / (imgElement.naturalHeight || 1)) * 100);
+      const totalSeed = Math.abs(hash + rSum + gSum * 2 + bSum * 3 + aspectRatioBonus);
+
+      return {
+        seed: totalSeed,
+        brightness: (rSum + gSum + bSum) / (imageData.length / 16 * 3),
+        warmth: rSum - bSum
+      };
+    }
+
+    function startAnalysisProcess(dataUrl) {
+      // 화면 전환: 랜딩 -> 로딩
+      document.getElementById('view-landing').classList.add('hidden');
+      const loadingView = document.getElementById('view-loading');
+      loadingView.classList.remove('hidden');
+      loadingView.classList.add('flex');
+
+      const previewImg = document.getElementById('loading-preview');
+      previewImg.src = dataUrl;
+
+      const loadingText = document.getElementById('loading-text');
+      const loadingBar = document.getElementById('loading-bar');
+
+      let step = 0;
+      loadingBar.style.width = '15%';
+      loadingText.textContent = LOADING_MESSAGES[0];
+
+      // 2초 동안 0.4초마다 멘트와 게이지 업데이트
+      const interval = setInterval(() => {
+        step++;
+        if (step < LOADING_MESSAGES.length) {
+          loadingText.textContent = LOADING_MESSAGES[step];
+          loadingBar.style.width = `${Math.min(100, (step + 1) * 22)}%`;
+        }
+      }, 400);
+
+      // 이미지 로드 완료 후 픽셀 분석 및 2초 뒤 결과 렌더링
+      const tempImg = new Image();
+      tempImg.onload = function() {
+        const analysis = analyzeImagePixels(tempImg);
+
+        setTimeout(() => {
+          clearInterval(interval);
+          renderResult(analysis);
+        }, 2100);
+      };
+      tempImg.src = dataUrl;
+    }
+
+    // ==================== 4. 결과 데이터 매칭 및 화면 렌더링 ====================
+    function renderResult(analysis) {
+      // 모드에 따른 후보군 필터링
+      let candidates = PETS_DATABASE;
+      if (currentMode === 'dog') {
+        candidates = PETS_DATABASE.filter(p => p.type === 'dog');
+      } else if (currentMode === 'cat') {
+        candidates = PETS_DATABASE.filter(p => p.type === 'cat');
+      } else if (currentMode === 'small') {
+        candidates = PETS_DATABASE.filter(p => p.type === 'small');
+      } else if (currentMode === 'wild') {
+        candidates = PETS_DATABASE.filter(p => p.type === 'wild');
+      }
+
+      // 결정론적 인덱스 선택
+      const petIndex = analysis.seed % candidates.length;
+      const matchedPet = candidates[petIndex];
+
+      // 친구 이름 처리
+      const rawName = document.getElementById('friend-name').value.trim();
+      const friendName = rawName ? rawName : '익명의 짝꿍';
+
+      // 싱크로율 (88.0% ~ 99.8% 사이 결정론적 계산)
+      const syncRate = (88 + ((analysis.seed % 119) / 10)).toFixed(1);
+
+      // 4가지 B급 스탯 게이지 (시드 기반 일관된 수치 산출, 25% ~ 99%)
+      const stat1 = 25 + ((analysis.seed * 3) % 75); // 야자 째고 PC방
+      const stat2 = 15 + ((analysis.seed * 7) % 80); // 매점 빵셔틀
+      const stat3 = 35 + ((analysis.seed * 11) % 65); // 선생님 눈 피해 딴짓
+      const stat4 = 50 + ((analysis.seed * 13) % 50); // 간식 주면 꼬리 흔들기
+
+      // DOM 업데이트
+      document.getElementById('res-user-img').src = currentImageDataUrl;
+      document.getElementById('res-friend-name').textContent = friendName;
+      document.getElementById('res-pet-emoji').textContent = matchedPet.emoji;
+      document.getElementById('res-pet-bg').style.backgroundColor = matchedPet.bgColor;
+      document.getElementById('res-pet-tag').textContent = matchedPet.tag;
+      document.getElementById('res-sync-rate').textContent = `싱크로율 ${syncRate}%`;
+      document.getElementById('res-breed-title').textContent = matchedPet.title;
+
+      // 스탯 바 & 텍스트 업데이트
+      updateStatBar(1, stat1);
+      updateStatBar(2, stat2);
+      updateStatBar(3, stat3);
+      updateStatBar(4, stat4);
+
+      document.getElementById('res-comment').textContent = `"${matchedPet.comment}"`;
+      document.getElementById('res-good-match').textContent = matchedPet.goodMatch;
+      document.getElementById('res-bad-match').textContent = matchedPet.badMatch;
+
+      // 화면 전환: 로딩 -> 결과
+      document.getElementById('view-loading').classList.add('hidden');
+      document.getElementById('view-loading').classList.remove('flex');
+      
+      const resultView = document.getElementById('view-result');
+      resultView.classList.remove('hidden');
+      resultView.classList.add('flex');
+    }
+
+    function updateStatBar(num, value) {
+      document.getElementById(`stat-${num}-val`).textContent = `${value}%`;
+      document.getElementById(`stat-${num}-bar`).style.width = `${value}%`;
+    }
+
+    // ==================== 5. 이미지 저장, 링크 공유 및 재시작 ====================
+    function saveResultImage() {
+      const cardElement = document.getElementById('capture-card');
+      showToast('고화질 관상 카드 생성 중...', '⏳');
+
+      html2canvas(cardElement, {
+        scale: 2.5, // 레티나 고해상도 저장
+        backgroundColor: '#FFFFFF',
+        useCORS: true,
+        logging: false
+      }).then(canvas => {
+        const link = document.createElement('a');
+        const friendName = document.getElementById('res-friend-name').textContent;
+        link.download = `댕냥관상_${friendName}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('갤러리에 저장 완료! 인스타 스토리에 올려봐!', '📸');
+      }).catch(err => {
+        console.error(err);
+        showToast('이미지 저장 중 오류가 발생했어요.', '⚠️');
+      });
+    }
+
+    function copyShareLink() {
+      const currentUrl = window.location.href;
+      // iframe 호환을 위해 임시 textarea + execCommand 사용
+      const tempInput = document.createElement('textarea');
+      tempInput.value = currentUrl;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      try {
+        document.execCommand('copy');
+        showToast('링크 복사 완료! 반 단톡방에 뿌려봐!', '🔥');
+      } catch (err) {
+        showToast('링크 복사에 실패했습니다.', '⚠️');
+      }
+      document.body.removeChild(tempInput);
+    }
+
+    function resetApp() {
+      // 파일 input 초기화
+      const fileInputs = document.querySelectorAll('input[type="file"]');
+      fileInputs.forEach(input => input.value = '');
+
+      document.getElementById('view-result').classList.add('hidden');
+      document.getElementById('view-result').classList.remove('flex');
+      document.getElementById('view-landing').classList.remove('hidden');
+    }
+
+    // 현재 페이지 전체를 단일 HTML 파일로 다운로드하는 함수
+    function downloadHtmlFile() {
+      try {
+        const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'pet-lookalike.html';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast('pet-lookalike.html 파일 다운로드 완료!', '💾');
+      } catch (err) {
+        console.error(err);
+        showToast('파일 다운로드 중 오류가 발생했습니다.', '⚠️');
+      }
+    }
+  </script>
+</body>
+</html>
